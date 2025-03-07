@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  birthday DateTime
+  email String
+  password String
+  avatar String
+  userPokeball UserPokeball[]
+  pokedex Pokedex[]
+}
+
+model Pokemon {
+  id Int @id @default(autoincrement())
+  name String
+  base_experience Int
+  hp Int
+  attack Int
+  defense Int
+  speed Int
+  image String
+  imageShiny String
+  crie String
+  pokedex Pokedex[]
+}
+
+model Pokeball {
+  id Int @id @default(autoincrement())
+  name String
+  capture_percentual Int
+  image String
+  userPokeball UserPokeball[]
+}
+
+model UserPokeball {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  pokeball Pokeball @relation(fields: [pokeballId], references: [id])
+  pokeballId Int
+}
+
+model Pokedex {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  pokemonId Int
+}
