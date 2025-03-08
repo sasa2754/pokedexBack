@@ -1,8 +1,6 @@
 import { Request, Response } from "express"
-import { prisma } from '../lib/prisma.ts'
-import jwt from 'jsonwebtoken'
-import CryptoJS from "crypto-js";
-import { UserDto } from "../dto/UserDto.ts";
+import { LoginUserDto, RegisterUserDto, UserDto } from "../dto/UserDto.ts";
+import { UserService } from "../service/userService.ts";
 
 export class UserController {
     static getUser = async (req : Request, res : Response) => {
@@ -18,10 +16,32 @@ export class UserController {
     }
 
     static registerUser = async (req: Request, res: Response) => {
+        const data : RegisterUserDto = req.body;
 
+        const response = await UserService.register(data);
+
+        if (!response) {
+            res.status(500).send("Erro interno!");
+            return;
+        }
+
+        
+
+        res.status(200).send("Usuário criado com sucesso!")
+        return;
     }
 
     static loginUser = async (req: Request, res: Response) => {
-        // Enviar o token pela header
+        const data : LoginUserDto = req.body;
+
+        const response = await UserService.login(data);
+
+        if (response == false) {
+            res.status(404).send("Usuário não encontrado!");
+            return;
+        }
+
+        res.set("Authorization", `Bearer ${response}`)
+        res.status(200).send("Login feito com sucesso!")
     }
 }

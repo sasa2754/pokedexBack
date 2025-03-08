@@ -1,6 +1,10 @@
 import { LoginUserDto, RegisterUserDto } from "../dto/UserDto.ts";
 import { prisma } from "../lib/prisma.ts";
 import jwt from 'jsonwebtoken';
+import CryptoJS from "crypto-js";
+import dayjs from "dayjs";
+import { AppError } from "../error/appError.ts";
+
 
 export class UserService {
     static register = async(data : RegisterUserDto) => {
@@ -11,8 +15,15 @@ export class UserService {
         const password = data.password;
 
         if (!process.env.SECRET) {
-            return false;
+            throw new Error("Internal Server Error!")
         }
+
+        const idade = dayjs().diff(dayjs(birthday), "year");
+
+        if (idade < 10) {
+            throw new AppError("Usuário deve ter pelo menos 10 anos para se cadastrar.", 401);
+        }
+
 
         const encryptedPassword = CryptoJS.AES.encrypt(password, process.env.SECRET).toString();
 
@@ -42,7 +53,8 @@ export class UserService {
             {expiresIn: "1d"}
         );
 
-        // const info = { user, token };
+        const info = { user, token };
+        console.log(info)
         return token;
     }
 
