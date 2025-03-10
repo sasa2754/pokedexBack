@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@types/express": "^5.0.0",
+    "axios": "^1.8.2",
     "bcryptjs": "^3.0.2",
     "config": "^3.3.12",
     "cors": "^2.8.5",

@@ -9,3 +9,18 @@ export interface Pokemon {
     imageShiny: string;
     crie: string;
 }
+
+export interface getAllPokemonApi {
+    pokemon_species: {
+        name: String
+    }
+}
+
+export interface PokemonSpecies {
+    name: string;
+    url: string;
+}
+
+export interface GenerationResponse {
+    pokemon_species: PokemonSpecies[];
+}

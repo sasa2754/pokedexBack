@@ -17,8 +17,9 @@ export class UserController {
 
     static registerUser = async (req: Request, res: Response) => {
         const data : RegisterUserDto = req.body;
-
+        
         const response = await UserService.register(data);
+        console.log("Ta aqui")
 
         if (!response) {
             res.status(500).send("Erro interno!");
@@ -36,12 +37,25 @@ export class UserController {
 
         const response = await UserService.login(data);
 
-        if (response == false) {
+        if (!response) {
             res.status(404).send("Usuário não encontrado!");
             return;
         }
 
         res.set("Authorization", `Bearer ${response}`)
         res.status(200).send("Login feito com sucesso!")
+    }
+
+    static getAvatar = async (req: Request, res: Response) => {
+
+        try {
+            const avatarList = await UserService.sendAvatar();
+
+            console.log(avatarList);
+    
+            res.status(200).json(avatarList);
+        } catch {
+            throw new Error("Erro ao pegar as imagens!");
+        }
     }
 }
