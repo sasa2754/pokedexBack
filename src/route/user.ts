@@ -4,9 +4,10 @@ import { userMiddleware} from '../middleware/userMiddleware.ts'
 
 const router : Router = express.Router()
 
-router.get('/', userMiddleware.getUserMid, UserController.getUser);
+router.get('/', UserController.getUser);
 router.post('/login', userMiddleware.validateLogin, UserController.loginUser);
 router.post('/register', userMiddleware.validateRegister, UserController.registerUser);
 router.get('/avatar', UserController.getAvatar);
+router.post('/buy', UserController.buyPokeball);
 
 export default router;

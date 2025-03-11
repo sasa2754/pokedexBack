@@ -36,6 +36,7 @@ export class PokemonService {
 
 
             const pokeSend: Pokemon = {
+                id: data.id,
                 name: data.name,
                 base_experience: data.base_experience,
                 hp: stats.hp,
@@ -51,11 +52,11 @@ export class PokemonService {
             
         } catch (error) {
             console.log(error);
-            throw new Error("Erro ao chamar os dados da API!");
+            throw new Error("Erro ao chamar os dados da API! Pokemon não existe!");
         }
     }
 
-    static getOnePokeRandom = async ( token : string ) => {
+    static getOnePokeRandom = async () => {
         try {
             if (!process.env.SECRET)
                 throw new Error("Internal Server Error!");
@@ -67,6 +68,7 @@ export class PokemonService {
 
                 const pokeSend = this.getPokeToName(pokemon);
 
+                
                 return pokeSend;
             } catch (error) {
                 console.log(error);
@@ -79,7 +81,89 @@ export class PokemonService {
         }
     }
 
-    static huntPokemon = async ( pokemon : Pokemon, pokeball : Pokeball, token : string ) => {
+    static huntPokemon = async (pokemon: Pokemon, pokeball: Pokeball, token: string) => {
+        const chanceBase = (pokemon.base_experience + pokemon.hp) / (pokemon.defense + pokemon.attack + pokemon.speed);
+        const chanceCapture = chanceBase * (pokeball.capture_percentual / 100);
+        const randomFactor = Math.floor(Math.random() * 31);
+        const percent = Math.min(Math.max(chanceCapture * randomFactor * 100, 1), 100);
 
-    }
+
+        const tokenRight = token.split(" ")[1];
+    
+        if (!process.env.SECRET)
+            throw new Error("Internal Server Error!");
+    
+        const decoded = jwt.verify(tokenRight, process.env.SECRET) as { id: number };
+        const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+
+    
+        if (!user)
+            throw new AppError("Usuário não encontrado!", 404);
+
+        const userPokeball = await prisma.userPokeball.findFirst({
+            where: {
+                userId: user.id,
+                pokeballId: pokeball.id,
+            }
+        });
+
+        if (!userPokeball || userPokeball.amount <= 0)
+            throw new AppError("Você não tem mais Pokébolas dessa categoria!", 400);
+
+        await prisma.userPokeball.update({
+            where: {
+                id: userPokeball.id,
+            },
+            data: {
+                amount: userPokeball.amount - 1,
+            },
+        });
+
+        const exists = await prisma.pokemon.findFirst({ where : { id: pokemon.id } });
+
+        if (!exists) {
+            await prisma.pokemon.create({
+                data: {
+                    id: pokemon.id,
+                    name: pokemon.name,
+                    base_experience: pokemon.base_experience,
+                    hp: pokemon.hp,
+                    attack: pokemon.attack,
+                    defense: pokemon.defense,
+                    speed: pokemon.speed,
+                    image: pokemon.image,
+                    imageShiny: pokemon.imageShiny,
+                    crie: pokemon.crie
+                }
+            })
+        }
+    
+        const random = Math.random() * 50;
+    
+        if (random <= percent) {
+            await prisma.pokedex.create({
+                data: {
+                    userId: user.id,
+                    pokemonId: pokemon.id
+                }
+            });
+
+            const coinUser = (pokemon.hp + pokemon.attack + pokemon.defense + pokemon.speed) / 10;
+
+            await prisma.user.update({
+                where : {
+                    id: user.id,
+                },
+                data: {
+                    money: user.money + coinUser
+                }
+            });
+            
+            console.log("✅ Pokémon capturado!");
+            return true;
+        } else {
+            console.log("❌ Pokémon escapou!");
+            return false;
+        }
+    };
 }

@@ -13,7 +13,7 @@ export default function (app: Express) {
         .use(async (err: Error, req: Request, res: Response, next: NextFunction) => {
             let status = 500
             const response = {
-                message: err.message
+                response: err.message
             }
         
             if (err instanceof AppError) {

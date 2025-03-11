@@ -20,7 +20,7 @@ export class userMiddleware {
        if(userExists)
           throw new AppError("Usuário já cadastrado!", 400);
     
-       next(); 
+       next();
     };
     
     
@@ -48,36 +48,5 @@ export class userMiddleware {
                throw new AppError("Senha incorreta!", 400);
 
           next();
-    }
-    
-    static getUserMid = async (req: Request, res: Response, next: NextFunction) => {
-       try {
-           const authHeader = req.headers.authorization;
-       
-           if (!authHeader)
-               throw new AppError("Token não fornecido!", 401);
-
-       
-           const token = authHeader.split(" ")[1];
-       
-           if (!process.env.SECRET)
-               throw new Error("Internal Server Error!");
-
-       
-           const decoded = jwt.verify(token, process.env.SECRET) as { id: number };
-       
-           const user = await prisma.user.findUnique({ where: { id: decoded.id } });
-       
-           if (!user)
-               throw new AppError("Usuário não encontrado!", 404);
-
-       
-           (req as any).user = user;
-    
-           next();
-    
-       } catch (error) {
-          throw new AppError("Token expirado!", 401);
-       }
     }
 }

@@ -3,13 +3,12 @@ import { prisma } from "../src/lib/prisma.ts";
 async function seed() {
   // Adding pokébolas on database
   const pokebolas = [
-    { name: "Pokeball", capture_percentual: 0.4, image: "../images/pokeballs/pokeball.png" },
-    { name: "Greatball", capture_percentual: 0.6, image: "../images/pokeballs/greatball.png" },
-    { name: "Ultraball", capture_percentual: 0.8, image: "../images/pokeballs/ultraball.png" },
-    { name: "Masterball", capture_percentual: 1.0, image: "../images/pokeballs/masterball.png" }, 
+    { name: "Pokeball", capture_percentual: 4, image: "../images/pokeballs/pokeball.png", price: 2 },
+    { name: "Greatball", capture_percentual: 6, image: "../images/pokeballs/greatball.png", price: 5 },
+    { name: "Ultraball", capture_percentual: 8, image: "../images/pokeballs/ultraball.png", price: 20 },
+    { name: "Masterball", capture_percentual: 10, image: "../images/pokeballs/masterball.png", price: 1000 }, 
   ];
 
-  // Inserting ...
   for (const ball of pokebolas) {
     await prisma.pokeball.create({
       data: ball,
@@ -22,10 +21,10 @@ async function seed() {
 seed()
   .catch((e) => {
     console.error(e);
-    process.exit(1); // Exit code error
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect(); // thats is disconnecting database if sucess on the task
+    await prisma.$disconnect();
   });
 
 

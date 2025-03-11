@@ -15,6 +15,7 @@ model User {
   email String @unique
   password String
   avatar String
+  money Int @default(10)
   userPokeball UserPokeball[]
   pokedex Pokedex[]
 }
@@ -38,6 +39,7 @@ model Pokeball {
   name String
   capture_percentual Int
   image String
+  price Int
   userPokeball UserPokeball[]
 }
 
@@ -47,6 +49,7 @@ model UserPokeball {
   userId Int
   pokeball Pokeball @relation(fields: [pokeballId], references: [id])
   pokeballId Int
+  amount Int @default(0)
 }
 
 model Pokedex {

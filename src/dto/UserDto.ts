@@ -21,6 +21,7 @@ export interface UserDto {
     birthday: Date;
     password: string;
     avatar: string;
+    money: number;
     pokeballs: Pokeball[];
     pokemons: Pokemon[];
 }

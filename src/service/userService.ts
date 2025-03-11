@@ -8,6 +8,7 @@ import fs from "fs/promises";
 
 import path from "path";
 import { fileURLToPath } from "url";
+import { Pokeball } from "../dto/PokeballDto.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,11 +42,31 @@ export class UserService {
                 email: email,
                 birthday: birthday,
                 avatar: avatar,
-                password: encryptedPassword
+                password: encryptedPassword,
+                money: 10
             }
-        })
-        
+        });
 
+        const user = await prisma.user.findFirst({ where: { email: email } });
+        const pokeballs = await prisma.pokeball.findMany();
+
+        if (!user)
+            throw new Error("Falha ao criar conta!");
+
+        const pokeball = await prisma.pokeball.findFirst({ where: { name: "Pokeball" } });
+
+        if (!pokeball) {
+            throw new Error("Pokébola Normal não encontrada!");
+        }
+
+        await prisma.userPokeball.create({
+            data: {
+                userId: user.id,
+                pokeballId: pokeball.id,
+                amount: 10
+            },
+        });
+        
         return true;
     }
 
@@ -73,15 +94,70 @@ export class UserService {
             if (!process.env.SECRET)
                 throw new Error("Internal Server Error!");
 
+            const tokenRight = token.split(" ")[1];
 
-            const decoded = jwt.verify(token, process.env.SECRET) as { id: number };
+            const decoded = jwt.verify(tokenRight, process.env.SECRET) as { id: number };
 
             const user = await prisma.user.findUnique({ where: { id: decoded.id } });
 
             if (!user)
                 throw new AppError("Usuário não encontrado!", 404);
 
-            return user;
+            const pokedex = await prisma.pokedex.findMany({
+                where: { userId: user.id },
+                include: { 
+                    pokemon: true 
+                }
+            });
+
+            const userPokeballs = await prisma.userPokeball.findMany({
+                where: { userId: user.id },
+                include: { pokeball: true }
+            });
+
+            const pokeballsCount = userPokeballs.reduce((acc, userPokeball) => {
+                const pokeballName = userPokeball.pokeball.name;
+                const amount = userPokeball.amount;
+
+                if (!acc[pokeballName]) {
+                    acc[pokeballName] = 0;
+                }
+                acc[pokeballName] += amount;
+
+                return acc;
+            }, {} as Record<string, number>);
+
+            const pokeballs = {
+                pokeball: pokeballsCount["Pokeball"] || 0,
+                greatball: pokeballsCount["Greatball"] || 0,
+                ultraball: pokeballsCount["Ultraball"] || 0,
+                masterball: pokeballsCount["Masterball"] || 0,
+            };
+
+            const response = {
+                name: user.name,
+                email: user.email,
+                birthday: user.birthday,
+                avatar: user.avatar,
+                money: user.money,
+                pokeballs: pokeballs,
+                pokedex: pokedex.map(item => ({
+                    ...item.pokemon,
+                    id: item.pokemon.id,
+                    name: item.pokemon.name,
+                    base_experience: item.pokemon.base_experience,
+                    hp: item.pokemon.hp,
+                    attack: item.pokemon.attack,
+                    defense: item.pokemon.defense,
+                    speed: item.pokemon.speed,
+                    image: item.pokemon.image,
+                    imageShiny: item.pokemon.imageShiny,
+                    crie: item.pokemon.crie,
+                }))
+            };
+
+            return response;
+
         } catch (error) {
             console.log(error);
             throw new Error("Internal Server Error!");
@@ -99,12 +175,66 @@ export class UserService {
                 url: `/images/avatar/${file}`,
             }));
 
-            // console.log(avatarList);
-
             return avatarList;
         } catch (error) {
             console.error("Erro ao ler a pasta de avatares:", error);
             throw new Error("Internal Server Error!");
         }
-    };
+    }
+
+    static buyPokeball = async (pokeball: Pokeball, token: string) => {
+        try {
+            if (!process.env.SECRET)
+                throw new Error("Internal Server Error!");
+
+            const tokenRight = token.split(" ")[1];
+
+            const decoded = jwt.verify(tokenRight, process.env.SECRET) as { id: number };
+
+            const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+
+            if (!user)
+                throw new AppError("Usuário não encontrado!", 404);
+
+            if (user.money < pokeball.price)
+                throw new AppError("Dinheiro insuficiente!", 400);
+
+            const userPokeball = await prisma.userPokeball.findFirst({
+                where: {
+                    userId: user.id,
+                    pokeballId: pokeball.id,
+                },
+            });
+
+            if (userPokeball) {
+                await prisma.userPokeball.update({
+                    where: { id: userPokeball.id },
+                    data: {
+                        amount: {
+                            increment: 1,
+                        },
+                    },
+                });
+            } else {
+                await prisma.userPokeball.create({
+                    data: {
+                        userId: user.id,
+                        pokeballId: pokeball.id,
+                        amount: 1,
+                    },
+                });
+            }
+
+            await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    money: user.money - pokeball.price
+                }
+            })
+
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }
