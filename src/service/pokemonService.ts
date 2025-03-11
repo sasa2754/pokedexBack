@@ -35,6 +35,8 @@ export class PokemonService {
               }, {});
 
 
+            const shinyPorcent = Math.floor(Math.random() * 101);
+
             const pokeSend: Pokemon = {
                 id: data.id,
                 name: data.name,
@@ -45,7 +47,8 @@ export class PokemonService {
                 speed: stats.speed,
                 image: data.sprites.front_default,
                 imageShiny: data.sprites.front_shiny,
-                crie: data.cries.latest
+                crie: data.cries.latest,
+                isShiny: shinyPorcent > 90 ? true : false
             };
 
             return pokeSend;
@@ -85,8 +88,7 @@ export class PokemonService {
         const chanceBase = (pokemon.base_experience + pokemon.hp) / (pokemon.defense + pokemon.attack + pokemon.speed);
         const chanceCapture = chanceBase * (pokeball.capture_percentual / 100);
         const randomFactor = Math.floor(Math.random() * 31);
-        const percent = Math.min(Math.max(chanceCapture * randomFactor * 100, 1), 100);
-
+        let percent = Math.min(Math.max(chanceCapture * randomFactor * 100, 1), 100);
 
         const tokenRight = token.split(" ")[1];
     
@@ -133,12 +135,15 @@ export class PokemonService {
                     speed: pokemon.speed,
                     image: pokemon.image,
                     imageShiny: pokemon.imageShiny,
-                    crie: pokemon.crie
+                    crie: pokemon.crie,
+                    isShiny: pokemon.isShiny
                 }
             })
         }
     
         const random = Math.random() * 50;
+
+        percent = pokemon.isShiny ? percent - 5 : percent;
     
         if (random <= percent) {
             await prisma.pokedex.create({
@@ -148,7 +153,8 @@ export class PokemonService {
                 }
             });
 
-            const coinUser = (pokemon.hp + pokemon.attack + pokemon.defense + pokemon.speed) / 10;
+            let coinUser = (pokemon.hp + pokemon.attack + pokemon.defense + pokemon.speed) / 10;
+            coinUser = pokemon.isShiny ? coinUser + Math.floor(Math.random() * 21) : coinUser;
 
             await prisma.user.update({
                 where : {

@@ -32,6 +32,7 @@ model Pokemon {
   imageShiny String
   crie String
   pokedex Pokedex[]
+  isShiny Boolean
 }
 
 model Pokeball {

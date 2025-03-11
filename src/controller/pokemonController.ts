@@ -34,8 +34,6 @@ export class PokemonController {
             where: { name: pokeballName }
         });
 
-        console.log(pokeball);
-
         if (!pokemon)
             throw new AppError("Pokemon não encontrado!", 404);
 
@@ -46,9 +44,9 @@ export class PokemonController {
         const capture = await PokemonService.huntPokemon(pokemon, pokeball, token);
 
         if (capture)
-            res.status(200).json({ response: true })
+            res.status(200).json({ response: true });
         else
-            res.status(200).json({ response: false })
+            res.status(200).json({ response: false });
 
     }
 }

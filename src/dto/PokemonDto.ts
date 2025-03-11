@@ -9,6 +9,7 @@ export interface Pokemon {
     image: string;
     imageShiny: string;
     crie: string;
+    isShiny: boolean;
 }
 
 export interface getAllPokemonApi {
