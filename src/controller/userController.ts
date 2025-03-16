@@ -48,7 +48,7 @@ export class UserController {
         }
 
         res.set("Authorization", `Bearer ${response}`)
-        res.status(200).send("Login feito com sucesso!")
+        res.status(200).send(`Login feito com sucesso!`)
     }
 
     static getAvatar = async (req: Request, res: Response) => {
