@@ -152,6 +152,7 @@ export class UserService {
                     speed: item.pokemon.speed,
                     image: item.pokemon.image,
                     imageShiny: item.pokemon.imageShiny,
+                    isShiny: item.pokemon.isShiny,
                     crie: item.pokemon.crie,
                 }))
             };
