@@ -84,11 +84,12 @@ export class PokemonService {
         }
     }
 
-    static huntPokemon = async (pokemon: Pokemon, pokeball: Pokeball, token: string) => {
+    static huntPokemon = async (pokemon: Pokemon, pokeball: Pokeball, cand: boolean, token: string) => {
         const chanceBase = (pokemon.base_experience + pokemon.hp) / (pokemon.defense + pokemon.attack + pokemon.speed);
         const chanceCapture = chanceBase * (pokeball.capture_percentual / 100);
         const randomFactor = Math.floor(Math.random() * 31);
         let percent = Math.min(Math.max(chanceCapture * randomFactor * 100, 1), 100) + 25;
+        percent = cand ? percent + 5 : percent;
 
         const tokenRight = token.split(" ")[1];
     
