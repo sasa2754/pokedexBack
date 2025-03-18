@@ -59,30 +59,46 @@ export class PokemonService {
         }
     }
 
-    static getOnePokeRandom = async () => {
+    static getOnePokeRandom = async (token: string) => {
         try {
             if (!process.env.SECRET)
                 throw new Error("Internal Server Error!");
-
-            try {
-                const responseAll = await this.getAllPokemons1();
-                
-                const pokemon = responseAll[Math.floor(Math.random() * responseAll.length)];
-
-                const pokeSend = this.getPokeToName(pokemon);
-
-                
-                return pokeSend;
-            } catch (error) {
-                console.log(error);
-                throw new Error("Erro ao chamar os dados da API!");
-            }
+    
+            // Decodificando o token para obter o id do usuário
+            const tokenRight = token.split(" ")[1];
+            const decoded = jwt.verify(tokenRight, process.env.SECRET) as { id: number };
+            const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    
+            if (!user) throw new AppError("Usuário não encontrado!", 404);
+    
+            // Pegando todos os pokemons já capturados pelo usuário
+            const userPokemons = await prisma.pokedex.findMany({
+                where: { userId: user.id },
+                select: { pokemonId: true },
+            });
+    
+            const userPokemonIds = userPokemons.map(p => p.pokemonId);
+    
+            // Requisitando todos os pokémons disponíveis na geração 1
+            const responseAll = await this.getAllPokemons1();
             
+            let pokemon;
+            let pokeSend;
+    
+            // Loop até encontrar um Pokémon que o usuário ainda não tenha
+            do {
+                pokemon = responseAll[Math.floor(Math.random() * responseAll.length)];
+                pokeSend = await this.getPokeToName(pokemon);
+            } while (userPokemonIds.includes(pokeSend.id)); // Se o usuário já tiver, tenta novamente
+    
+            return pokeSend;
+    
         } catch (error) {
             console.log(error);
             throw new Error("Internal Server Error!");
         }
     }
+    
 
     static huntPokemon = async (pokemon: Pokemon, pokeball: Pokeball, token: string) => {
         const chanceBase = (pokemon.base_experience + pokemon.hp) / (pokemon.defense + pokemon.attack + pokemon.speed);
@@ -121,7 +137,7 @@ export class PokemonService {
             },
         });
 
-        const exists = await prisma.pokemon.findFirst({ where : { id: pokemon.id } });
+        const exists = await prisma.pokemon.findFirst({ where : { id: pokemon.id, isShiny: pokemon.isShiny } });
 
         if (!exists) {
             await prisma.pokemon.create({

@@ -13,7 +13,12 @@ export class PokemonController {
     }
 
     static getOnePokemon = async (req: Request, res: Response) => {
-        const pokemon = await PokemonService.getOnePokeRandom();
+        const token = req.headers.authorization;
+
+        if (!token)
+            throw new AppError("Token não recebido!", 400);
+
+        const pokemon = await PokemonService.getOnePokeRandom(token);
         res.status(200).json(pokemon);
 
     }
