@@ -19,10 +19,10 @@ export class PokemonController {
     }
 
     static huntPokemon = async (req: Request, res: Response) => {
-        const { pokemon, pokeballName, cand } = req.body;
+        const { pokemon, pokeballName } = req.body;
         const token = req.headers.authorization;
 
-        if (!pokemon || !pokeballName || cand == null)
+        if (!pokemon || !pokeballName)
             throw new AppError("Campos nulos!", 400);
 
         if (!token)
@@ -39,7 +39,7 @@ export class PokemonController {
             throw new AppError("Pokeball não encontrado!", 404);
 
 
-        const capture = await PokemonService.huntPokemon(pokemon, pokeball, cand, token);
+        const capture = await PokemonService.huntPokemon(pokemon, pokeball, token);
 
         if (capture)
             res.status(200).json({ response: true });
