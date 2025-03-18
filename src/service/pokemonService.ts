@@ -104,7 +104,7 @@ export class PokemonService {
         const chanceBase = (pokemon.base_experience + pokemon.hp) / (pokemon.defense + pokemon.attack + pokemon.speed);
         const chanceCapture = chanceBase * (pokeball.capture_percentual / 100);
         const randomFactor = Math.floor(Math.random() * 31);
-        let percent = Math.min(Math.max(chanceCapture * randomFactor * 100, 1), 100) + 25;
+        let percent = Math.min(Math.max(chanceCapture * randomFactor * 100, 1), 100);
 
         const tokenRight = token.split(" ")[1];
     
