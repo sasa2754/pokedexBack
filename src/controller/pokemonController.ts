@@ -33,8 +33,12 @@ export class PokemonController {
         if (!token)
             throw new AppError("Token não recebido!", 400);
 
+        const capitalize = (str: string) => {
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        };
+
         const pokeball = await prisma.pokeball.findFirst({
-            where: { name: pokeballName }
+            where: { name: capitalize(pokeballName) }
         });
 
         if (!pokemon)
