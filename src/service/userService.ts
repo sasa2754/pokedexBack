@@ -85,7 +85,7 @@ export class UserService {
         );
 
         const info = { user, token };
-        console.log(info)
+        console.log(info);
         return token;
     }
 
