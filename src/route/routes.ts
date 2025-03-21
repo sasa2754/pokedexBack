@@ -28,3 +28,5 @@ export default function (app: Express) {
 }
 
 // senhaMaravilhosa:aSabrinaÉLindaEMaravilhosa123
+
+// mysql://root:root@localhost:3307/pokedex
