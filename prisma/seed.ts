@@ -33,3 +33,6 @@ seed()
   
 // npx prisma migrate dev
 // npx prisma db seed
+
+// DATABASE_URL=mysql://root:root@localhost:3307/pokedex
+// SECRET=senhaaaaaaaalindamaravilhosasabrinaperfeita123
