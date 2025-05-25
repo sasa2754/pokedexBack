@@ -2,6 +2,7 @@ import { prisma } from "../src/lib/prisma.ts";
 
 async function seed() {
   // Adding pokébolas on database
+  console.log(process.env.DATABASE_URL)
   const pokebolas = [
     { name: "Pokeball", capture_percentual: 4, image: "../images/pokeballs/pokeball.png", price: 2 },
     { name: "Greatball", capture_percentual: 6, image: "../images/pokeballs/greatball.png", price: 5 },

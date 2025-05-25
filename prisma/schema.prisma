@@ -7,56 +7,63 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id Int @id @default(autoincrement())
-  name String
-  birthday DateTime
-  email String @unique
-  password String
-  avatar String
-  money Int @default(10)
+  id           Int            @id @default(autoincrement())
+  name         String
+  birthday     DateTime
+  email        String         @unique
+  password     String
+  avatar       String
+  money        Int            @default(10)
+  pokedex      Pokedex[]
   userPokeball UserPokeball[]
-  pokedex Pokedex[]
 }
 
 model Pokemon {
-  id Int @id @default(autoincrement())
-  name String
+  id              Int       @id @default(autoincrement())
+  name            String
   base_experience Int
-  hp Int
-  attack Int
-  defense Int
-  speed Int
-  image String
-  imageShiny String
-  crie String
-  pokedex Pokedex[]
-  isShiny Boolean
+  hp              Int
+  attack          Int
+  defense         Int
+  speed           Int
+  image           String
+  imageShiny      String
+  crie            String
+  isShiny         Boolean
+  pokedex         Pokedex[]
 }
 
 model Pokeball {
-  id Int @id @default(autoincrement())
-  name String
+  id                 Int            @id @default(autoincrement())
+  name               String
   capture_percentual Int
-  image String
-  price Int
-  userPokeball UserPokeball[]
+  image              String
+  price              Int
+  userPokeball       UserPokeball[]
+
+  @@map("pokeball")
 }
 
 model UserPokeball {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  pokeball Pokeball @relation(fields: [pokeballId], references: [id])
+  id         Int      @id @default(autoincrement())
+  userId     Int
   pokeballId Int
-  amount Int @default(0)
+  amount     Int      @default(0)
+  pokeball   Pokeball @relation(fields: [pokeballId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([pokeballId], map: "UserPokeball_pokeballId_fkey")
+  @@index([userId], map: "UserPokeball_userId_fkey")
 }
 
 model Pokedex {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  pokemon Pokemon @relation(fields: [pokemonId], references: [id])
+  id        Int     @id @default(autoincrement())
+  userId    Int
   pokemonId Int
+  pokemon   Pokemon @relation(fields: [pokemonId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@index([pokemonId], map: "Pokedex_pokemonId_fkey")
+  @@index([userId], map: "Pokedex_userId_fkey")
 }

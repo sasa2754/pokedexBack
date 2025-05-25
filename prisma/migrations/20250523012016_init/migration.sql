@@ -6,7 +6,9 @@ CREATE TABLE `User` (
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `avatar` VARCHAR(191) NOT NULL,
+    `money` INTEGER NOT NULL DEFAULT 10,
 
+    UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -22,16 +24,18 @@ CREATE TABLE `Pokemon` (
     `image` VARCHAR(191) NOT NULL,
     `imageShiny` VARCHAR(191) NOT NULL,
     `crie` VARCHAR(191) NOT NULL,
+    `isShiny` BOOLEAN NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Pokeball` (
+CREATE TABLE `pokeball` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `capture_percentual` INTEGER NOT NULL,
     `image` VARCHAR(191) NOT NULL,
+    `price` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -41,6 +45,7 @@ CREATE TABLE `UserPokeball` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userId` INTEGER NOT NULL,
     `pokeballId` INTEGER NOT NULL,
+    `amount` INTEGER NOT NULL DEFAULT 0,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -58,7 +63,7 @@ CREATE TABLE `Pokedex` (
 ALTER TABLE `UserPokeball` ADD CONSTRAINT `UserPokeball_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `UserPokeball` ADD CONSTRAINT `UserPokeball_pokeballId_fkey` FOREIGN KEY (`pokeballId`) REFERENCES `Pokeball`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `UserPokeball` ADD CONSTRAINT `UserPokeball_pokeballId_fkey` FOREIGN KEY (`pokeballId`) REFERENCES `pokeball`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Pokedex` ADD CONSTRAINT `Pokedex_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
