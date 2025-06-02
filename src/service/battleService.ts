@@ -45,11 +45,11 @@ export class BattleService {
         if (!battle) {
             battle = {
                 matchId,
-                player1Id: match.players[0],
-                player2Id: match.players[1],
+                player1Id: match.players[0].id,
+                player2Id: match.players[1].id,
                 player1Pokemon: null,
                 player2Pokemon: null,
-                turn: match.players[Math.floor(Math.random() * 2)],
+                turn: match.players[Math.floor(Math.random() * 2)].id,
                 logs: [],
                 winnerId: undefined
             };

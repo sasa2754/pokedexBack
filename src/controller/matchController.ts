@@ -14,7 +14,7 @@ export class MatchController {
         const tokenRight = token.split(" ")[1];
         const decoded = jwt.verify(tokenRight, process.env.SECRET) as { id: number };
 
-        const result = MatchService.addToMatchmaking(decoded.id);
+        const result = await MatchService.addToMatchmaking(decoded.id);
 
         if (result.matchFound) {
             res.status(200).json(result);
