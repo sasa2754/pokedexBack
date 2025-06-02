@@ -11,6 +11,8 @@ export class MatchService {
 
         const userName = (await prisma.user.findFirst({where: {id: userId}}))?.name
 
+        console.log(waitingList)
+
         if (!userName)
             throw new AppError("User not found!", 404)
 
