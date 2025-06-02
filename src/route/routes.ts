@@ -4,6 +4,7 @@ import user from './user.ts'
 import { AppError } from "../error/appError.ts";
 import pokemon from "./pokemon.ts";
 import multiplayer from "./match.ts";
+import battle from "./battle.ts";
 
 export default function (app: Express) {
     app
@@ -11,6 +12,7 @@ export default function (app: Express) {
         .use("/user", user)
         .use("/pokemon", pokemon)
         .use("/matchmaking", multiplayer)
+        .use("/battle", battle)
 
         .use(async (err: Error, req: Request, res: Response, next: NextFunction) => {
             let status = 500

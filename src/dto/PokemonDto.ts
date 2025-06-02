@@ -7,7 +7,9 @@ export interface Pokemon {
     defense: number;
     speed: number;
     image: string;
+    imageBack: string;
     imageShiny: string;
+    imageBackShiny: string;
     crie: string;
     isShiny: boolean;
 }

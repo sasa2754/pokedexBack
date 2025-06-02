@@ -28,7 +28,9 @@ model Pokemon {
   defense         Int
   speed           Int
   image           String
+  imageBack       String
   imageShiny      String
+  imageBackShiny  String
   crie            String
   isShiny         Boolean
   pokedex         Pokedex[]

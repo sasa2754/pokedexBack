@@ -46,7 +46,9 @@ export class PokemonService {
                 defense: stats.defense,
                 speed: stats.speed,
                 image: data.sprites.front_default,
+                imageBack: data.sprites.back_default,
                 imageShiny: data.sprites.front_shiny,
+                imageBackShiny: data.sprites.back_shiny,
                 crie: data.cries.latest,
                 isShiny: shinyPorcent > 90 ? true : false
             };
@@ -150,7 +152,9 @@ export class PokemonService {
                     defense: pokemon.defense,
                     speed: pokemon.speed,
                     image: pokemon.image,
+                    imageBack: pokemon.imageBack,
                     imageShiny: pokemon.imageShiny,
+                    imageBackShiny: pokemon.imageBackShiny,
                     crie: pokemon.crie,
                     isShiny: pokemon.isShiny
                 }
