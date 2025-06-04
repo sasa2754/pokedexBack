@@ -1,6 +1,7 @@
 import { Match, WaitingPlayer } from "../dto/matchDto.ts";
 import { AppError } from "../error/appError.ts";
 import { prisma } from "../lib/prisma.ts";
+import { BattleService } from "./battleService.ts";
 
 
 const waitingList: WaitingPlayer[] = [];
@@ -41,6 +42,8 @@ export class MatchService {
 
             matches.push(match);
 
+            BattleService.createBattle(matchId, player1.userId, player2.userId)
+
             return { matchFound: true, match };
         }
 
@@ -49,5 +52,12 @@ export class MatchService {
 
     static getMatchForUser(userId: number) {
         return matches.find(m => m.players.map(x=>x.id).includes(userId));
+    }
+
+    static cleanUpMatch(matchId: string) {
+        const index = matches.findIndex(b => b.matchId === matchId);
+        if (index !== -1) {
+            matches.splice(index, 1);
+        }
     }
 }

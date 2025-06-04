@@ -173,6 +173,7 @@ export class BattleService {
         if (battle.winnerId) {
             this.distributeRewards(battle);
             this.cleanupBattle(battle.matchId);
+            MatchService.cleanUpMatch(battle.matchId)
         }
     }
 
@@ -215,5 +216,19 @@ export class BattleService {
 
     static getBattle(matchId: string): Battle | undefined {
         return battles.find(b => b.matchId === matchId);
+    }
+
+    static createBattle(matchId: string, player1Id: number, player2Id: number) {
+        const battle = {
+            matchId,
+            player1Id,
+            player2Id,
+            player1Pokemon: null,
+            player2Pokemon: null,
+            turn: [player1Id, player2Id][Math.floor(Math.random() * 2)],
+            logs: [],
+            winnerId: undefined
+        };
+        battles.push(battle);
     }
 }
