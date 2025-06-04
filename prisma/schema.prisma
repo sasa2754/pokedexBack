@@ -44,7 +44,6 @@ model Pokeball {
   price              Int
   userPokeball       UserPokeball[]
 
-  @@map("pokeball")
 }
 
 model UserPokeball {
