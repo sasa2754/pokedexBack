@@ -31,8 +31,8 @@ export class MatchService {
             const player2 = waitingList.shift()!;
             
             const matchId = `${player1.userId}-${player2.userId}`;
-            cleanupBattleByUser(player1.userId);
-            cleanupBattleByUser(player2.userId);
+            BattleService.cleanupBattleByUser(player1.userId);
+            BattleService.cleanupBattleByUser(player2.userId);
 
             const match: Match = {
                 matchId,
