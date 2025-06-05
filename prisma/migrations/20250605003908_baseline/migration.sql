@@ -22,7 +22,9 @@ CREATE TABLE `Pokemon` (
     `defense` INTEGER NOT NULL,
     `speed` INTEGER NOT NULL,
     `image` VARCHAR(191) NOT NULL,
+    `imageBack` VARCHAR(191) NOT NULL,
     `imageShiny` VARCHAR(191) NOT NULL,
+    `imageBackShiny` VARCHAR(191) NOT NULL,
     `crie` VARCHAR(191) NOT NULL,
     `isShiny` BOOLEAN NOT NULL,
 
@@ -30,7 +32,7 @@ CREATE TABLE `Pokemon` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `pokeball` (
+CREATE TABLE `Pokeball` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `capture_percentual` INTEGER NOT NULL,
@@ -47,6 +49,8 @@ CREATE TABLE `UserPokeball` (
     `pokeballId` INTEGER NOT NULL,
     `amount` INTEGER NOT NULL DEFAULT 0,
 
+    INDEX `UserPokeball_pokeballId_fkey`(`pokeballId`),
+    INDEX `UserPokeball_userId_fkey`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -56,17 +60,19 @@ CREATE TABLE `Pokedex` (
     `userId` INTEGER NOT NULL,
     `pokemonId` INTEGER NOT NULL,
 
+    INDEX `Pokedex_pokemonId_fkey`(`pokemonId`),
+    INDEX `Pokedex_userId_fkey`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `UserPokeball` ADD CONSTRAINT `UserPokeball_pokeballId_fkey` FOREIGN KEY (`pokeballId`) REFERENCES `Pokeball`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `UserPokeball` ADD CONSTRAINT `UserPokeball_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `UserPokeball` ADD CONSTRAINT `UserPokeball_pokeballId_fkey` FOREIGN KEY (`pokeballId`) REFERENCES `pokeball`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Pokedex` ADD CONSTRAINT `Pokedex_pokemonId_fkey` FOREIGN KEY (`pokemonId`) REFERENCES `Pokemon`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Pokedex` ADD CONSTRAINT `Pokedex_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Pokedex` ADD CONSTRAINT `Pokedex_pokemonId_fkey` FOREIGN KEY (`pokemonId`) REFERENCES `Pokemon`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

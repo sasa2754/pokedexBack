@@ -172,7 +172,7 @@ export class BattleService {
 
         if (battle.winnerId) {
             this.distributeRewards(battle);
-            this.cleanupBattle(battle.matchId);
+            // this.cleanupBattle(battle.matchId);
             MatchService.cleanUpMatch(battle.matchId)
         }
     }
@@ -202,6 +202,20 @@ export class BattleService {
 
     private static cleanupBattle(matchId: string) {
         const index = battles.findIndex(b => b.matchId === matchId);
+        if (index !== -1) {
+            battles.splice(index, 1);
+        }
+    }
+
+    private static cleanupBattleByUser(userId: number) {
+        const userIdString = userId.toString();
+        const index = battles.findIndex(b => {
+            const [id1, id2] = b.matchId.split('-')
+            if (id1 === userIdString || id2 === userIdString)
+                return true
+            return false
+        });
+        
         if (index !== -1) {
             battles.splice(index, 1);
         }
