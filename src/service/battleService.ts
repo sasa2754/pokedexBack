@@ -207,7 +207,7 @@ export class BattleService {
         }
     }
 
-    private static cleanupBattleByUser(userId: number) {
+    public static cleanupBattleByUser(userId: number) {
         const userIdString = userId.toString();
         const index = battles.findIndex(b => {
             const [id1, id2] = b.matchId.split('-')
@@ -215,7 +215,7 @@ export class BattleService {
                 return true
             return false
         });
-        
+
         if (index !== -1) {
             battles.splice(index, 1);
         }
